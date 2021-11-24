@@ -11,7 +11,7 @@ function head($i = 2, $data = ""){
 if(empty($_GET) || empty($_GET["postal"]) head();
 
 // Request to the Posti's location API
-$items = json_decode(file_get_contents("https://locationservice.posti.com/location?locationZipCode=". preg_replace("/[^0-9]/", "", $_GET["postal"]) ."&top=10&types=POSTOFFICE&types=PICKUPPOINT&types=SMARTPOST&types=BUSINESSSERVICE"), true);
+$items = file_get_contents("https://locationservice.posti.com/location?locationZipCode=". preg_replace("/[^0-9]/", "", $_GET["postal"]) ."&top=10&types=POSTOFFICE&types=PICKUPPOINT&types=SMARTPOST&types=BUSINESSSERVICE");
 
 // Error message if empty answer
 if(empty($items)) head(1, [
@@ -19,6 +19,9 @@ if(empty($items)) head(1, [
 	"fi" => "Ei toimipisteitä saatavilla.",
 	"en" => "No post offices available."
 ]);
+
+// Convert data to object
+$items = json_decode($items, true);
 
 // Checking the language, default fi
 if(!empty($_GET["lang"])){
@@ -38,5 +41,5 @@ foreach($items["locations"] as $item){
 	];
 }
 
-// Returns the response in JSON format
+// Returns the response in json format
 head(0, $data);
